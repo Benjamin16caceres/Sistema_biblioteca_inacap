@@ -1,0 +1,34 @@
+{% extends 'biblioteca_app/base.html' %}
+
+{% block content %}
+<div class="sala-card" style="max-width: 600px; margin: 0 auto; text-align: center;">
+    <h1 class="page-title">Cancelar Reserva</h1>
+    
+    <div class="sala-info" style="margin-bottom: 2rem;">
+        <div class="info-item">
+            <strong>Sala:</strong> {{ reserva.sala.nombre }}
+        </div>
+        <div class="info-item">
+            <strong>RUT:</strong> {{ reserva.rut }}
+        </div>
+        <div class="info-item">
+            <strong>Fecha inicio:</strong> {{ reserva.fecha_inicio|date:"d/m/Y H:i" }}
+        </div>
+        <div class="info-item">
+            <strong>Fecha término:</strong> {{ reserva.fecha_termino|date:"d/m/Y H:i" }}
+        </div>
+    </div>
+    
+    <p style="margin-bottom: 2rem; font-size: 1.1rem; color: #4a5568;">
+        ¿Estás seguro de que quieres cancelar esta reserva?
+    </p>
+    
+    <div class="btn-group" style="justify-content: center;">
+        <form method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Sí, Cancelar Reserva</button>
+        </form>
+        <a href="/mis-reservas/?rut={{ reserva.rut }}" class="btn btn-secondary">No, Volver</a>
+    </div>
+</div>
+{% endblock %}

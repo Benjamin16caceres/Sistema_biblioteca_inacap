@@ -1,0 +1,95 @@
+{% extends 'biblioteca_app/base.html' %}
+
+{% block content %}
+<div class="sala-card">
+    <h1 class="page-title">🔄 Liberación Automática Avanzada</h1>
+    
+    <div class="sala-info">
+        <div class="info-item">
+            <strong>Estado del Sistema:</strong> 
+            {% if reservas_expiradas > 0 %}
+                <span style="color: #ed8936;">⚠️ Requiere atención inmediata</span>
+            {% else %}
+                <span style="color: #48bb78;">✅ Actualizado</span>
+            {% endif %}
+        </div>
+        <div class="info-item">
+            <strong>Reservas activas:</strong> {{ reservas_activas }}
+        </div>
+        <div class="info-item">
+            <strong>Reservas expiradas:</strong> {{ reservas_expiradas }}
+        </div>
+    </div>
+
+    <!-- Panel de Simulación -->
+    <div style="background: #f0f9ff; padding: 2rem; border-radius: 12px; margin: 2rem 0; border: 2px solid #3182ce;">
+        <h4 style="color: #1e40af; margin-bottom: 1rem;"> Simulación de Liberación Automática</h4>
+        <p style="color: #374151; margin-bottom: 1.5rem;">
+            <strong>Simula el paso del tiempo:</strong> Libera salas que terminarán en X minutos
+        </p>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label">¿Cuántos minutos quieres adelantar?</label>
+                <select name="minutos_adelanto" class="form-input" required>
+                    <option value="0">🔴 Liberar salas YA expiradas</option>
+                    <option value="5">🟡 Liberar salas que terminan en 5 minutos</option>
+                    <option value="15">🟠 Liberar salas que terminan en 15 minutos</option>
+                    <option value="30">🟢 Liberar salas que terminan en 30 minutos</option>
+                    <option value="120">🔵 Liberar TODAS las salas (2 horas)</option>
+                </select>
+                <span class="form-help">Simula que el tiempo ha avanzado X minutos</span>
+            </div>
+            
+            <button type="submit" class="btn btn-warning">
+                ⚡ Ejecutar Simulación
+            </button>
+        </form>
+    </div>
+
+    <!-- Estado Detallado -->
+    <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin: 2rem 0; border: 1px solid #e2e8f0;">
+        <h4 style="color: #2d3748; margin-bottom: 1rem;"> Estado Detallado</h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div style="text-align: center; padding: 1rem; background: #fed7d7; border-radius: 8px;">
+                <div style="font-size: 1.5rem; font-weight: bold; color: #c53030;">{{ reservas_expiradas }}</div>
+                <div style="color: #744210;">🔴 Expiradas</div>
+            </div>
+            <div style="text-align: center; padding: 1rem; background: #feebcb; border-radius: 8px;">
+                <div style="font-size: 1.5rem; font-weight: bold; color: #dd6b20;">{{ en_5_min }}</div>
+                <div style="color: #744210;">🟡 En 5 min</div>
+            </div>
+            <div style="text-align: center; padding: 1rem; background: #fef5e7; border-radius: 8px;">
+                <div style="font-size: 1.5rem; font-weight: bold; color: #ed8936;">{{ en_15_min }}</div>
+                <div style="color: #744210;">🟠 En 15 min</div>
+            </div>
+            <div style="text-align: center; padding: 1rem; background: #f0fff4; border-radius: 8px;">
+                <div style="font-size: 1.5rem; font-weight: bold; color: #38a169;">{{ en_30_min }}</div>
+                <div style="color: #2d7d32;">🟢 En 30 min</div>
+            </div>
+        </div>
+    </div>
+
+    {% if reservas_expiradas > 0 %}
+    <div style="background: #fffaf0; padding: 1.5rem; border-radius: 12px; margin: 2rem 0; border: 2px solid #ed8936;">
+        <h4 style="color: #744210; margin-bottom: 1rem;">⚠️ Liberación Normal</h4>
+        <p style="color: #744210; margin-bottom: 1rem;">
+            También puedes ejecutar la liberación normal (solo salas ya expiradas):
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="minutos_adelanto" value="0">
+            <button type="submit" class="btn btn-primary">
+                🔄 Liberar Salas Expiradas
+            </button>
+        </form>
+    </div>
+    {% endif %}
+    
+    <div class="btn-group">
+        <a href="{% url 'home' %}" class="btn btn-secondary">← Volver al Inicio</a>
+        <a href="{% url 'liberar_salas' %}" class="btn btn-outline">Versión Simple</a>
+    </div>
+</div>
+{% endblock %}

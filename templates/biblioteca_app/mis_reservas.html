@@ -1,0 +1,80 @@
+{% extends 'biblioteca_app/base.html' %}
+
+{% block content %}
+<style>
+    .reserva-activa {
+        border-left: 6px solid #48bb78;
+    }
+    .reserva-finalizada {
+        border-left: 6px solid #a0aec0;
+    }
+</style>
+
+<div class="sala-card" style="max-width: 800px; margin: 0 auto;">
+    <h1 class="page-title">Mis Reservas</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="form-label">Ingresa tu RUT para ver tus reservas:</label>
+            <input type="text" name="rut" class="form-input" placeholder="Ej: 12345678-9" value="{{ rut_buscado }}" required>
+            <span class="form-help">Ingresa tu RUT con guion (ej: 12345678-9)</span>
+        </div>
+        <button type="submit" class="btn btn-primary">🔍 Buscar Mis Reservas</button>
+    </form>
+
+    {% if rut_buscado %}
+        {% if reservas %}
+            <h3 style="color: #1a202c; margin-bottom: 1.5rem; margin-top: 2rem;">Reservas para RUT: {{ rut_buscado }}</h3>
+            
+            {% for reserva in reservas %}
+            <div class="sala-card {% if reserva.esta_activa %}reserva-activa{% else %}reserva-finalizada{% endif %}">
+                <div class="sala-header">
+                    <h3 class="sala-title">{{ reserva.sala.nombre }}</h3>
+                    <span class="status-badge {% if reserva.esta_activa %}status-disponible{% else %}status-mantencion{% endif %}">
+                        {% if reserva.esta_activa %}ACTIVA{% else %}FINALIZADA{% endif %}
+                    </span>
+                </div>
+                
+                <div class="sala-info">
+                    <div class="info-item">
+                        <strong>RUT:</strong> {{ reserva.rut }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Fecha inicio:</strong> {{ reserva.fecha_inicio|date:"d/m/Y H:i" }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Fecha termino:</strong> {{ reserva.fecha_termino|date:"d/m/Y H:i" }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Estado:</strong> 
+                        {% if reserva.esta_activa %}
+                            <span style="color: #48bb78;">🟢 Activa</span>
+                        {% else %}
+                            <span style="color: #a0aec0;">🔴 Finalizada</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if reserva.esta_activa %}
+                <div class="btn-group">
+                    <form method="post" action="{% url 'cancelar_reserva' reserva.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que quieres cancelar esta reserva?')">
+                            🗑️ Cancelar Reserva
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+        {% else %}
+            <div style="text-align: center; padding: 2rem; background: #f8f9fa; border-radius: 8px; margin-top: 2rem;">
+                <h3 style="color: #6c757d;">No se encontraron reservas para el RUT: {{ rut_buscado }}</h3>
+                <p>Este RUT no tiene reservas activas o históricas.</p>
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

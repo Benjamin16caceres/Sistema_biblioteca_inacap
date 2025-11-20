@@ -1,0 +1,87 @@
+{% extends 'biblioteca_app/base.html' %}
+
+{% block content %}
+<div class="sala-card">
+    <div class="sala-header">
+        <h1 class="page-title">Reserva Programada</h1>
+        <span class="status-badge status-disponible">PROGRAMAR</span>
+    </div>
+    
+    <div class="sala-info">
+        <div class="info-item">
+            <strong>Sala:</strong> {{ sala.nombre }}
+        </div>
+        <div class="info-item">
+            <strong>Capacidad:</strong> {{ sala.capacidad }} personas
+        </div>
+        <div class="info-item">
+            <strong>Duración:</strong> 2 horas
+        </div>
+        <div class="info-item">
+            <strong>Horario Biblioteca:</strong> 8:00 - 20:00 hrs
+        </div>
+    </div>
+
+    <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 12px; margin: 2rem 0;">
+        <h4 style="color: #2d3748; margin-bottom: 1rem;">Selecciona Fecha y Hora</h4>
+        <p style="color: #4a5568; margin: 0.5rem 0;">
+            <strong>• Horarios disponibles:</strong> 8:00 - 18:00 hrs
+        </p>
+        <p style="color: #4a5568; margin: 0.5rem 0;">
+            <strong>• Duración fija:</strong> 2 horas
+        </p>
+        <p style="color: #4a5568; margin: 0.5rem 0;">
+            <strong>• Ejemplo:</strong> Si eliges 14:00, termina a las 16:00
+        </p>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="form-label">RUT:</label>
+            {{ form.rut }}
+            {% if form.rut.errors %}
+            <div style="color: #e53e3e; margin-top: 0.5rem;">
+                {{ form.rut.errors }}
+            </div>
+            {% endif %}
+            <span class="form-help">Formato: 12345678-9</span>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Fecha de reserva:</label>
+            {{ form.fecha }}
+            {% if form.fecha.errors %}
+            <div style="color: #e53e3e; margin-top: 0.5rem;">
+                {{ form.fecha.errors }}
+            </div>
+            {% endif %}
+            <span class="form-help">Selecciona una fecha futura</span>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Hora de inicio:</label>
+            {{ form.hora }}
+            {% if form.hora.errors %}
+            <div style="color: #e53e3e; margin-top: 0.5rem;">
+                {{ form.hora.errors }}
+            </div>
+            {% endif %}
+            <span class="form-help">La reserva terminará 2 horas después</span>
+        </div>
+        
+        {{ form.fecha_inicio }}
+        {{ form.fecha_termino }}
+        
+        <div class="btn-group">
+            <button type="submit" class="btn btn-success">
+                ✅ Confirmar Reserva Programada
+            </button>
+            <a href="{% url 'sala_detail' sala.id %}" class="btn btn-secondary">
+                ← Volver Atrás
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

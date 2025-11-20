@@ -1,0 +1,202 @@
+{% extends 'biblioteca_app/base.html' %}
+
+{% block content %}
+<div class="sala-card">
+    <h1 class="page-title">Estado de Liberaciones Programadas</h1>
+    
+    <div class="info-box">
+        <h4>Sistema de Cuenta Regresiva</h4>
+        <p><strong>Instrucciones:</strong> Programa la liberación y luego ACTUALIZA ESTA PAGINA manualmente para ver el progreso.</p>
+        <p>El contador disminuye 1 minuto cada vez que actualizas la página.</p>
+    </div>
+
+    <div id="contenedor-liberaciones">
+        {% if reservas_programadas %}
+            {% for reserva in reservas_programadas %}
+            <div class="sala-card liberacion-item" id="sala-{{ reserva.id }}">
+                <div class="sala-header">
+                    <h3 class="sala-title">{{ reserva.sala.nombre }}</h3>
+                    {% if reserva.tiempo_liberacion <= 1 %}
+                        <span class="status-badge status-reservada">LISTA PARA LIBERAR</span>
+                    {% else %}
+                        <span class="status-badge status-mantencion">EN CUENTA REGRESIVA</span>
+                    {% endif %}
+                </div>
+                
+                <div class="sala-info">
+                    <div class="info-item">
+                        <strong>RUT:</strong> {{ reserva.rut }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Minutos restantes:</strong> 
+                        <span class="contador {% if reserva.tiempo_liberacion <= 1 %}contador-critico{% else %}contador-normal{% endif %}">
+                            {{ reserva.tiempo_liberacion }}
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Estado:</strong> 
+                        {% if reserva.tiempo_liberacion <= 1 %}
+                            <span style="color: #e53e3e; font-weight: bold;">¡Haz clic en "Liberar Ahora"!</span>
+                        {% else %}
+                            <span style="color: #ed8936;">Actualiza la página para continuar</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="acciones">
+                    {% if reserva.tiempo_liberacion <= 1 %}
+                    <form method="post" action="{% url 'liberar_ahora' reserva.sala.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-liberar">
+                            🔓 Liberar Ahora
+                        </button>
+                    </form>
+                    {% endif %}
+                    
+                    <form method="post" action="{% url 'actualizar_contador' reserva.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-actualizar">
+                            ⏱️ Reducir 1 Minuto
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <h3>No hay liberaciones programadas</h3>
+                <p>Todas las salas están disponibles.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="botones-navegacion">
+        <a href="{% url 'programar_liberacion' %}" class="btn-principal">
+            ← Programar Nueva Liberación
+        </a>
+        <a href="{% url 'home' %}" class="btn-secundario">
+            🏠 Volver al Inicio
+        </a>
+        <button onclick="location.reload()" class="btn-actualizar">
+            🔄 Actualizar Página
+        </button>
+    </div>
+</div>
+
+<style>
+.info-box {
+    background: #f0f9ff;
+    padding: 1.5rem;
+    border-radius: 10px;
+    border-left: 4px solid #3182ce;
+    margin-bottom: 2rem;
+}
+
+.info-box h4 {
+    color: #1e40af;
+    margin-bottom: 0.5rem;
+}
+
+.liberacion-item {
+    margin-bottom: 1.5rem;
+    border-left: 6px solid #ed8936;
+    background: #fffaf0;
+}
+
+.contador {
+    font-size: 1.4rem;
+    font-weight: bold;
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+}
+
+.contador-normal {
+    color: #dd6b20;
+    background: #fffaf0;
+}
+
+.contador-critico {
+    color: #e53e3e;
+    background: #fed7d7;
+    animation: parpadeo 1s infinite;
+}
+
+.acciones {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.btn-liberar {
+    background: #e53e3e;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-actualizar {
+    background: #3182ce;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-liberar:hover, .btn-actualizar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.botones-navegacion {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    justify-content: center;
+}
+
+.btn-principal {
+    background: #e63946;
+    color: white;
+    padding: 1rem 2rem;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.btn-secundario {
+    background: #4a5568;
+    color: white;
+    padding: 1rem 2rem;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    background: #f0fff4;
+    border-radius: 12px;
+    border: 2px solid #48bb78;
+}
+
+.empty-state h3 {
+    color: #2d7d32;
+    margin-bottom: 1rem;
+}
+
+@keyframes parpadeo {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+</style>
+{% endblock %}

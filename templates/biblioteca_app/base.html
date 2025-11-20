@@ -1,0 +1,486 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca INACAP - Sistema de Reservas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .header-inacap {
+            background: #000000;
+            color: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .header-top {
+            background: #000000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid #e63946;
+        }
+        
+        .logo-inacap h1 {
+            color: #FFFFFF;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .logo-inacap .biblioteca {
+            color: #e63946;
+            font-weight: 300;
+            font-size: 1.4rem;
+        }
+        
+        .header-banner {
+            background: url('https://architectural.hunterdouglaslatam.com/wp-content/uploads/2021/12/enews_imagenes_imagen_2943.jpg') center/cover;
+            height: 220px;
+            position: relative;
+        }
+        
+        .banner-overlay {
+            background: linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(230,57,70,0.3) 100%);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .banner-text h2 {
+            color: white;
+            font-size: 2.8rem;
+            font-weight: 300;
+            margin-bottom: 0.8rem;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+        }
+        
+        .banner-text p {
+            color: #f8f9fa;
+            font-size: 1.3rem;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+        
+        .navbar {
+            background: #2d3748;
+            padding: 1.2rem 2rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav-links a {
+            color: #e2e8f0;
+            text-decoration: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 25px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            font-size: 0.95rem;
+            border: 2px solid transparent;
+        }
+        
+        .nav-links a:hover {
+            background: #e63946;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(230,57,70,0.3);
+            border-color: #e63946;
+        }
+        
+        .nav-links a.active {
+            background: #e63946;
+            color: white;
+            border-color: #e63946;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+        
+        .page-title {
+            color: #1a202c;
+            font-size: 2.4rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid #e63946;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .sala-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sala-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: #e63946;
+        }
+        
+        .sala-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+        
+        .sala-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+        
+        .sala-title {
+            color: #1a202c;
+            font-size: 1.6rem;
+            font-weight: 600;
+        }
+        
+        .sala-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: #4a5568;
+            font-size: 1rem;
+        }
+        
+        .info-item strong {
+            color: #2d3748;
+            font-weight: 600;
+        }
+        
+        .status-badge {
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-disponible {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+        }
+        
+        .status-reservada {
+            background: linear-gradient(135deg, #e53e3e, #c53030);
+            color: white;
+        }
+        
+        .status-mantencion {
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            color: white;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.9rem 2rem;
+            border: none;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
+            text-transform: none;
+            min-width: 140px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #e63946, #d90429);
+            color: white;
+            box-shadow: 0 4px 15px rgba(230,57,70,0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #d90429, #c1121f);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(230,57,70,0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #2d3748, #1a202c);
+            color: white;
+            box-shadow: 0 4px 15px rgba(45,55,72,0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #1a202c, #000000);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(45,55,72,0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            box-shadow: 0 4px 15px rgba(72,187,120,0.3);
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(135deg, #38a169, #2f855a);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(72,187,120,0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e53e3e, #c53030);
+            color: white;
+            box-shadow: 0 4px 15px rgba(229,62,62,0.3);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #c53030, #9b2c2c);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(229,62,62,0.4);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            color: white;
+            box-shadow: 0 4px 15px rgba(237,137,54,0.3);
+        }
+        
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #dd6b20, #c05621);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(237,137,54,0.4);
+        }
+        
+        .btn-disabled {
+            background: #a0aec0;
+            color: white;
+            cursor: not-allowed;
+            opacity: 0.6;
+            box-shadow: none;
+        }
+        
+        .info-card {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            margin: 3rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: #e63946;
+        }
+        
+        .info-card h4 {
+            color: #e63946;
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .info-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .info-card li {
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1rem;
+        }
+        
+        .info-card li:last-child {
+            border-bottom: none;
+        }
+        
+        .form-group {
+            margin-bottom: 2rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 1.1rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #e63946;
+            box-shadow: 0 0 0 3px rgba(230,57,70,0.1);
+        }
+        
+        .form-help {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: block;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        .empty-state h3 {
+            color: #4a5568;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .empty-state p {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        /* Estilos para mensajes flash */
+        .messages {
+            margin-bottom: 2rem;
+        }
+        
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            border-left: 6px solid;
+        }
+        
+        .alert-success {
+            background: #f0fff4;
+            color: #2d7d32;
+            border-color: #48bb78;
+        }
+        
+        .alert-error {
+            background: #fed7d7;
+            color: #c53030;
+            border-color: #e53e3e;
+        }
+
+        .alert-warning {
+            background: #fffaf0;
+            color: #744210;
+            border-color: #ed8936;
+        }
+        
+        .alert-info {
+            background: #f0f9ff;
+            color: #1e40af;
+            border-color: #3182ce;
+        }
+    </style>
+</head>
+<body>
+    <header class="header-inacap">
+        <div class="header-top">
+            <div class="logo-inacap">
+                <h1>INACAP <span class="biblioteca">Biblioteca</span></h1>
+            </div>
+        </div>
+        <div class="header-banner">
+            <div class="banner-overlay">
+                <div class="banner-text">
+                    <h2>Sistema de Reservas</h2>
+                    <p>Salas de Estudio - Biblioteca Central</p>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="navbar">
+    <div class="nav-links">
+        <a href="{% url 'home' %}" class="active"> Inicio</a>
+        <a href="{% url 'mis_reservas' %}"> Mis Reservas</a>
+        {% if user.is_staff %}
+        <a href="{% url 'programar_liberacion' %}"> Admin - Liberaciones</a>
+        <a href="/admin/"> Panel Admin</a>
+        {% endif %}
+    </div>
+</nav>
+    
+    
+    <main class="main-container">
+        <!-- Mensajes Flash -->
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% elif message.tags == 'info' %}info{% else %}success{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% block content %}
+        {% endblock %}
+    </main>
+</body>
+</html>

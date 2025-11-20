@@ -1,0 +1,101 @@
+{% extends 'biblioteca_app/base.html' %}
+
+{% block content %}
+<h1 class="page-title">Salas de Estudio Disponibles</h1>
+<p style="color: #4a5568; margin-bottom: 2rem; font-size: 1.1rem;">
+    Reserva tu espacio para estudio individual o grupal
+</p>
+
+<div>
+    {% for sala in salas %}
+    <div class="sala-card">
+        <div class="sala-header">
+            <h3 class="sala-title">{{ sala.nombre }}</h3>
+            <span class="status-badge {% if sala.esta_disponible %}status-disponible{% else %}status-reservada{% endif %}">
+                {% if sala.esta_disponible %}DISPONIBLE{% else %}NO DISPONIBLE{% endif %}
+            </span>
+        </div>
+        
+        <div class="sala-info">
+            <div class="info-item">
+                <strong>Capacidad:</strong> {{ sala.capacidad }} personas
+            </div>
+            <div class="info-item">
+                <strong>Estado:</strong> {{ sala.get_estado_display }}
+            </div>
+            <div class="info-item">
+                <strong>Disponibilidad Hoy:</strong> 
+                {% if sala.esta_disponible %}
+                    <span style="color: #48bb78;">Hay horarios disponibles</span>
+                {% else %}
+                    <span style="color: #e53e3e;">
+                        {% if sala.estado != 'disponible' or not sala.habilitada %}
+                            Sala no habilitada
+                        {% else %}
+                            No hay horarios disponibles hoy
+                        {% endif %}
+                    </span>
+                {% endif %}
+            </div>
+            {% if sala.descripcion %}
+            <div class="info-item">
+                <strong>Descripción:</strong> {{ sala.descripcion }}
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="btn-group">
+            {% if sala.esta_disponible %}
+            <!-- OPCIÓN 1: RESERVA RÁPIDA -->
+            <a href="{% url 'reserva_rapida' sala.id %}" class="btn btn-primary">
+                Reservar Ahora
+            </a>
+            <!-- OPCIÓN 2: RESERVA PROGRAMADA -->
+            <a href="{% url 'reserva_programada' sala.id %}" class="btn btn-success">
+                Elegir Fecha/Hora
+            </a>
+            {% else %}
+            <button class="btn btn-disabled" disabled>
+                No Disponible
+            </button>
+            {% endif %}
+            <a href="{% url 'sala_detail' sala.id %}" class="btn btn-secondary">
+                Ver Detalles
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+        <h3>No hay salas disponibles</h3>
+        <p>En este momento no hay salas de estudio disponibles para reservar.</p>
+    </div>
+    {% endfor %}
+</div>
+
+
+<div class="info-card">
+    <h4>Gestión del Sistema</h4>
+    <ul>
+        <li>
+            <strong>Reservar Ahora:</strong> Sala disponible inmediatamente por 2 horas
+        </li>
+        <li>
+            <strong>Elegir Fecha/Hora:</strong> Selecciona fecha y hora específica para tu reserva
+        </li>
+        <li>
+            <strong>Horario Biblioteca:</strong> 8:00 - 20:00 horas
+        </li>
+        <li>
+            <strong>Duración máxima:</strong> 2 horas por reserva
+        </li>
+        <li>
+            <strong>Liberación automática:</strong> Las salas se liberan al terminar el tiempo
+        </li>
+    </ul>
+    <div class="btn-group" style="margin-top: 1.5rem;">
+        <a href="{% url 'liberar_salas' %}" class="btn btn-primary">
+            🔄 Ejecutar Liberación Automática
+        </a>
+    </div>
+</div>
+{% endblock %}

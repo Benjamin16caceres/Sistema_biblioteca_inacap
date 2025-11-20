@@ -1,0 +1,87 @@
+{% extends 'biblioteca_app/base.html' %}
+
+{% block content %}
+<div class="sala-card">
+    <div class="sala-header">
+        <h1 class="sala-title">{{ sala.nombre }}</h1>
+        <span class="status-badge {% if sala.esta_disponible %}status-disponible{% else %}status-reservada{% endif %}">
+            {% if sala.esta_disponible %}DISPONIBLE{% else %}NO DISPONIBLE{% endif %}
+        </span>
+    </div>
+    
+    <div class="sala-info">
+        <div class="info-item">
+            <strong>Capacidad:</strong> {{ sala.capacidad }} personas
+        </div>
+        <div class="info-item">
+            <strong>Estado:</strong> {{ sala.get_estado_display }}
+        </div>
+        <div class="info-item">
+            <strong>Descripción:</strong> {{ sala.descripcion }}
+        </div>
+    </div>
+</div>
+
+<!-- Opciones de Reserva -->
+<div class="sala-card">
+    <h3>Selecciona el Tipo de Reserva</h3>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+        <!-- Reserva Rápida -->
+        <div style="text-align: center; padding: 2.5rem; background: #f0fff4; border-radius: 16px; border: 3px solid #48bb78;">
+            <h4 style="color: #2d3748; margin-bottom: 1rem;">Reserva Rápida</h4>
+            <p style="color: #4a5568; margin-bottom: 1.5rem; line-height: 1.5;">
+                <strong>Disponible inmediatamente</strong><br>
+                Duración: 2 horas<br>
+                Ideal para estudio urgente
+            </p>
+            {% if sala.esta_disponible %}
+            <a href="{% url 'reserva_rapida' sala.id %}" class="btn btn-primary" style="min-width: 160px;">
+                Reservar Ahora
+            </a>
+            {% else %}
+            <button class="btn btn-disabled" disabled>No Disponible</button>
+            {% endif %}
+        </div>
+        
+        <!-- Reserva Programada -->
+        <div style="text-align: center; padding: 2.5rem; background: #f0f9ff; border-radius: 16px; border: 3px solid #3182ce;">
+            <h4 style="color: #2d3748; margin-bottom: 1rem;">Reserva Programada</h4>
+            <p style="color: #4a5568; margin-bottom: 1.5rem; line-height: 1.5;">
+                <strong>Elige fecha y hora</strong><br>
+                Duración: 2 horas<br>
+                Planifica con anticipación
+            </p>
+            {% if sala.esta_disponible %}
+            <a href="{% url 'reserva_programada' sala.id %}" class="btn btn-success" style="min-width: 160px;">
+                Elegir Fecha/Hora
+            </a>
+            {% else %}
+            <button class="btn btn-disabled" disabled>No Disponible</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="sala-card">
+    <h3>Reservas Activas</h3>
+    {% if sala.reserva_set.exists %}
+    <div style="margin-top: 1rem;">
+        {% for reserva in sala.reserva_set.all %}
+            {% if reserva.esta_activa %}
+            <div style="padding: 1rem; border-left: 4px solid #e63946; background: #f8f9fa; margin-bottom: 0.5rem;">
+                <strong>{{ reserva.fecha_inicio|date:"d/m/Y H:i" }} - {{ reserva.fecha_termino|date:"H:i" }}</strong>
+                <br>RUT: {{ reserva.rut }}
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <p style="color: #718096; text-align: center; padding: 1.5rem;">No hay reservas activas en este momento</p>
+    {% endif %}
+</div>
+
+<div class="btn-group">
+    <a href="{% url 'home' %}" class="btn btn-secondary">← Volver al Inicio</a>
+</div>
+{% endblock %}

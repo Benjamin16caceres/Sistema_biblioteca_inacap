@@ -1,0 +1,61 @@
+{% extends 'biblioteca_app/base.html' %}
+
+{% block content %}
+<div class="sala-card">
+    <div class="sala-header">
+        <h1 class="page-title">Reserva Rápida</h1>
+        <span class="status-badge status-disponible">DISPONIBLE</span>
+    </div>
+    
+    <div class="sala-info">
+        <div class="info-item">
+            <strong>Sala:</strong> {{ sala.nombre }}
+        </div>
+        <div class="info-item">
+            <strong>Capacidad:</strong> {{ sala.capacidad }} personas
+        </div>
+        <div class="info-item">
+            <strong>Disponibilidad:</strong> Inmediata (30 minutos)
+        </div>
+        <div class="info-item">
+            <strong>Duración:</strong> 2 horas
+        </div>
+    </div>
+
+    <div style="background: #f0fff4; padding: 1.5rem; border-radius: 12px; margin: 2rem 0;">
+        <h4 style="color: #2d3748; margin-bottom: 1rem;">Información de la Reserva Rápida</h4>
+        <p style="color: #4a5568; margin: 0.5rem 0;">
+            <strong>• Disponible en:</strong> 30 minutos
+        </p>
+        <p style="color: #4a5568; margin: 0.5rem 0;">
+            <strong>• Horario:</strong> {{ hora_actual|date:"H:i" }} - {{ hora_fin|date:"H:i" }}
+        </p>
+        <p style="color: #4a5568; margin: 0.5rem 0;">
+            <strong>• Duración:</strong> 2 horas automáticas
+        </p>
+    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="form-label">Ingresa tu RUT:</label>
+            {{ form.rut }}
+            {% if form.rut.errors %}
+            <div style="color: #e53e3e; margin-top: 0.5rem;">
+                {{ form.rut.errors }}
+            </div>
+            {% endif %}
+            <span class="form-help">Formato: 12345678-9</span>
+        </div>
+        
+        <div class="btn-group">
+            <button type="submit" class="btn btn-primary">
+                ✅ Confirmar Reserva Rápida
+            </button>
+            <a href="{% url 'sala_detail' sala.id %}" class="btn btn-secondary">
+                ← Volver Atrás
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

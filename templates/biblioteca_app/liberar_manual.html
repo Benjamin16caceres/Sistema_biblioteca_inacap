@@ -1,0 +1,55 @@
+{% extends 'biblioteca_app/base.html' %}
+
+{% block content %}
+<div class="sala-card">
+    <h1 class="page-title">🔄 Liberación Automática de Salas</h1>
+    
+    <div class="sala-info">
+        <div class="info-item">
+            <strong>Estado del Sistema:</strong> 
+            {% if reservas_expiradas > 0 %}
+                <span style="color: #ed8936;">⚠️ Requiere atención</span>
+            {% else %}
+                <span style="color: #48bb78;">✅ Actualizado</span>
+            {% endif %}
+        </div>
+        <div class="info-item">
+            <strong>Reservas activas:</strong> {{ reservas_activas }}
+        </div>
+        <div class="info-item">
+            <strong>Reservas expiradas:</strong> {{ reservas_expiradas }}
+        </div>
+    </div>
+
+    {% if reservas_expiradas > 0 %}
+    <div style="background: #fffaf0; padding: 2rem; border-radius: 12px; margin: 2rem 0; border: 2px solid #ed8936;">
+        <h4 style="color: #744210; margin-bottom: 1rem;">⚠️ Acción Requerida</h4>
+        <p style="color: #744210; margin-bottom: 1.5rem;">
+            Hay <strong>{{ reservas_expiradas }}</strong> sala(s) que han completado su tiempo de reserva 
+            y deben ser liberadas automáticamente.
+        </p>
+        
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning">
+                🔄 Ejecutar Liberación Automática
+            </button>
+            <p style="color: #744210; margin-top: 1rem; font-size: 0.9rem;">
+                <strong>Nota:</strong> Esta acción eliminará {{ reservas_expiradas }} reserva(s) expirada(s) del sistema.
+            </p>
+        </form>
+    </div>
+    {% else %}
+    <div style="background: #f0fff4; padding: 2rem; border-radius: 12px; margin: 2rem 0; border: 2px solid #48bb78;">
+        <h4 style="color: #2d7d32; margin-bottom: 1rem;">✅ Sistema Actualizado</h4>
+        <p style="color: #2d7d32;">
+            No hay salas pendientes de liberación. El sistema está sincronizado correctamente.
+        </p>
+    </div>
+    {% endif %}
+    
+    <div class="btn-group">
+        <a href="{% url 'home' %}" class="btn btn-secondary">← Volver al Inicio</a>
+    </div>
+</div>
+{% endblock %}

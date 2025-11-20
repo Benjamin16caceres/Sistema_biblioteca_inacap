@@ -1,0 +1,93 @@
+{% extends 'biblioteca_app/base.html' %}
+
+{% block content %}
+<div class="sala-card">
+    <h1 class="page-title">Programar Liberacion de Salas</h1>
+    
+    <div class="sala-info">
+        <div class="info-item">
+            <strong>Modo Admin:</strong> Solo usuarios administradores pueden acceder
+        </div>
+    </div>
+
+    <!-- Salas Ocupadas -->
+    <div style="margin: 2rem 0;">
+        <h3 style="color: #2d3748; margin-bottom: 1rem;">Salas Actualmente Ocupadas</h3>
+        
+        {% if salas_ocupadas %}
+            {% for item in salas_ocupadas %}
+            <div class="sala-card" style="background: #fffaf0; border-left: 6px solid #ed8936;">
+                <div class="sala-header">
+                    <h3 class="sala-title">{{ item.sala.nombre }}</h3>
+                    <span class="status-badge status-reservada">OCUPADA</span>
+                </div>
+                
+                <div class="sala-info">
+                    <div class="info-item">
+                        <strong>Capacidad:</strong> {{ item.sala.capacidad }} personas
+                    </div>
+                    <div class="info-item">
+                        <strong>Reservado por:</strong> {{ item.reserva.rut }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Termina a las:</strong> {{ item.reserva.fecha_termino|date:"H:i" }}
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; align-items: end; flex-wrap: wrap; margin-top: 1rem;">
+                    <!-- Formulario para programar liberacion -->
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="sala_id" value="{{ item.sala.id }}">
+                        
+                        <div style="display: flex; gap: 1rem; align-items: end;">
+                            <div>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Liberar en:</label>
+                                <select name="minutos" class="form-input" style="width: 200px;">
+                                    <option value="1">1 minuto</option>
+                                    <option value="2">2 minutos</option>
+                                    <option value="5">5 minutos</option>
+                                    <option value="10">10 minutos</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-warning">
+                                Programar Liberacion
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Boton para liberar inmediatamente -->
+                    <form method="post" action="{% url 'liberar_ahora' item.sala.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" 
+                                onclick="return confirm('¿Liberar {{ item.sala.nombre }} inmediatamente?')">
+                            Liberar Ahora
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align: center; padding: 3rem; background: #f0fff4; border-radius: 12px;">
+                <h3 style="color: #38a169;">Todas las salas estan disponibles</h3>
+                <p>No hay salas ocupadas en este momento.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Panel de Control -->
+    <div style="background: #f0f9ff; padding: 2rem; border-radius: 12px; margin: 2rem 0; border: 2px solid #3182ce;">
+        <h4 style="color: #1e40af; margin-bottom: 1rem;">Panel de Control Admin</h4>
+        
+        <div class="btn-group">
+            <a href="{% url 'estado_liberaciones' %}" class="btn btn-primary">
+                Ver Estado de Liberaciones
+            </a>
+            <a href="{% url 'home' %}" class="btn btn-secondary">
+                Volver al Inicio
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
