@@ -2,13 +2,13 @@ import os
 from pathlib import Path
 import environ
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Configurar django-environ
+
 env = environ.Env()
 
-# LEER .env DESDE LA CARPETA BASE
+
 env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env('SECRET_KEY', default='clave-temporal-para-pruebas')
@@ -53,8 +53,7 @@ TEMPLATES = [
     },
 ]
 
-# CONFIGURACIÓN DE BASE DE DATOS MÁS SIMPLE
-# REEMPLAZA tu configuración actual con esta:
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
@@ -64,21 +63,11 @@ DATABASES = {
     }
 }
 
-# O si prefieres usar variables env, cambia esta parte:
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.oracle',
-#         'NAME': f'{env("DB_HOST", default="192.168.1.86")}:{env("DB_PORT", default="1521")}/{env("DB_NAME", default="xepdb1")}',
-#         'USER': env('DB_USER', default='system'),
-#         'PASSWORD': env('PASSWORD', default='oracle'),  # Cambiado de DB_PASSWORD a PASSWORD
-#     }
-# }
-
 LANGUAGE_CODE = 'es-cl'
 TIME_ZONE = 'America/Santiago'
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

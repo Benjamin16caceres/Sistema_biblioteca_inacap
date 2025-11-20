@@ -47,4 +47,4 @@ class Reserva(models.Model):
         return timezone.now() < self.fecha_termino
     
     def __str__(self):
-        return f"Reserva {self.sala.nombre} - {self.rut}"  # ← CORREGIDO: self.sala.nombre
+        return f"Reserva {self.sala.nombre} - {self.rut}"  
